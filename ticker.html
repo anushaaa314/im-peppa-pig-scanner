@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ ticker }} · Muddy Puddles</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← back to scan</a>
+
+    {% if error %}
+      <div class="card empty">
+        <h1>🐷 {{ ticker }}</h1>
+        <p>{{ error }}</p>
+      </div>
+    {% else %}
+      <header class="ticker-head">
+        <h1>{{ ticker }}</h1>
+        {% if res.passed_all %}
+          <span class="badge pass">PASSED ALL 7 ✓</span>
+        {% else %}
+          <span class="badge fail">DID NOT PASS</span>
+        {% endif %}
+      </header>
+
+      <!-- metric cards -->
+      <section class="metrics">
+        {% macro card(label, value, suffix='') %}
+          {% if value is not none %}
+          <div class="metric">
+            <div class="metric-val">{{ value }}{{ suffix }}</div>
+            <div class="metric-label">{{ label }}</div>
+          </div>
+          {% endif %}
+        {% endmacro %}
+        {{ card('Close', res.get('Close')) }}
+        {{ card('% above 10wk high', res.get('Above_Close%'), '%') }}
+        {{ card('% above AVWAP', res.get('Above_AVWAP%'), '%') }}
+        {% if choice == 'a' %}
+          {{ card('10wk range', res.get('Past_Range%'), '%') }}
+        {% else %}
+          {{ card('CV ratio', res.get('CV_Ratio')) }}
+        {% endif %}
+        {{ card('Body / range', res.get('Body/Range'), '%') }}
+        {{ card('CMF', res.get('CMF')) }}
+        {{ card('Volume vs avg', res.get('Volume_vs_Average'), 'x') }}
+        {{ card('40wk EMA', res.get('EMA_LONG')) }}
+        {{ card('10wk EMA', res.get('EMA_SHORT')) }}
+      </section>
+
+      <!-- chart -->
+      <section class="card">
+        <h2>Weekly chart</h2>
+        <div id="chart"></div>
+        <div class="legend-note">
+          <span class="key" style="color:#7e57c2">━ 40wk EMA</span>
+          <span class="key" style="color:#3d9be0">━ 10wk EMA</span>
+          <span class="key" style="color:#f59e0b">┅ 52wk AVWAP</span>
+          <span class="key" style="color:#43a047">┅ breakout level</span>
+        </div>
+      </section>
+
+      <!-- c1..c7 breakdown -->
+      <section class="card">
+        <h2>The 7 checks</h2>
+        {% set checks = [
+          ('c1', 'Uptrend', 'Close above 40wk EMA, and 10wk EMA above 40wk EMA'),
+          ('c2', 'Breakout', 'Closed 4–20% above the highest close of the last 10 weeks'),
+          ('c3', 'Compression', 'Base was tight / coiled before the move'),
+          ('c4', 'Strong bar', 'This week is bullish with body ≥ 50% of the range'),
+          ('c5', 'Money flowing in', 'Chaikin Money Flow is positive'),
+          ('c6', 'Above AVWAP', 'Close at or above the 52-week anchored VWAP'),
+          ('c7', 'Volume', 'This week volume ≥ the recent average')
+        ] %}
+        <ul class="checks">
+          {% for key, name, desc in checks %}
+            {% set v = res.get(key) %}
+            <li class="check {{ 'ok' if v is sameas true else ('bad' if v is sameas false else 'na') }}">
+              <span class="mark">{{ '✓' if v is sameas true else ('✗' if v is sameas false else '–') }}</span>
+              <div>
+                <div class="check-name">{{ name }}</div>
+                <div class="check-desc">{{ desc }}</div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+        <p class="reason"><strong>Scanner said:</strong> {{ res.get('reason', '—') }}</p>
+      </section>
+
+      <script>
+        const CHART = {{ chart_json | safe }};
+      </script>
+      <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    {% endif %}
+
+    <footer class="site-foot">made with muddy puddles 🌧️</footer>
+  </div>
+</body>
+</html>
