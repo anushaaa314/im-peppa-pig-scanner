@@ -14,8 +14,8 @@
     name: "price",
     x: d.dates,
     open: d.open, high: d.high, low: d.low, close: d.close,
-    increasing: { line: { color: "#ef5a8e" } },   // Peppa pink up-weeks
-    decreasing: { line: { color: "#b0b0bc" } },   // muted grey down-weeks
+    increasing: { line: { color: "#2e9e5b" } }, 
+    decreasing: { line: { color: "#e05a5a" } },
     xaxis: "x", yaxis: "y",
   };
 
