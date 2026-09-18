@@ -5,7 +5,7 @@ A website that runs a weekly stock breakout scan across ~2,000 tickers. It
 lets you watch the progress live, shows the matches in a sortable table, and
 opens a detail page (with an interactive weekly chart) for any ticker you click.
 
-I originally built the logic and scanner part of it with python and the free library yfinance, and used some AI to turn it into an actual website. The terminal-based program my_little_brother_george.py is written fully by me. 
+I originally built the logic and scanner part of it with python and the free library yfinance and pandas, and then used some AI to turn it into an actual website. The terminal-based program my_little_brother_george.py is written fully by me. 
 
 
 For each ticker, it pulls 2 years of weekly candles and runs 7 checks in this order:
@@ -19,28 +19,18 @@ For each ticker, it pulls 2 years of weekly candles and runs 7 checks in this or
 7. Volume — this week's volume ≥ the recent average
 
 Only tickers that pass ALL SEVEN show up in the results table
-
-# to run it....
-
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
-Then open <http://localhost:5000> in your browser, pick a compression method
-(`a` or `b`), and hit **Run Scan**. A full scan takes a few minutes (it's
-downloading data for ~1,000 tickers in batches). Needs an internet connection.
+This program is not the fastest! Please be patient when first running it. Also, you may not get many hits for tickers, it is a bit of a specific logic so be wary.
 
 ## Files
 
 | File | What it is |
 |------|------------|
-| `muddy_puddles.py` | The ticker universe (a big Python list) |
+| `muddy_puddles.py` | The ticker universe (a Python list) |
 | `my_little_brother_george.py` | The original scanner logic (untouched) |
-| `scanner_web.py` | Web wrapper: live-progress scan + per-ticker chart data |
+| `scanner_web.py` | Web wrapper: live-progress scan and per-ticker chart data |
 | `app.py` | Flask server (home, live scan stream, ticker detail) |
-| `templates/` | The two pages (home + ticker detail) |
-| `static/` | Styling + browser JavaScript |
+| `templates/` | The two pages (home and ticker detail) |
+| `static/` | Styling browser JavaScript |
 
 ## Notes
 
