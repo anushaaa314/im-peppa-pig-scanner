@@ -153,6 +153,8 @@ function renderResults() {
         a.href = "/ticker/" + row.Ticker + "?choice=" + currentChoice;
         a.textContent = row.Ticker;
         a.className = "ticker-link";
+        a.target = "_blank";      // open the detail page in a new tab...
+        a.rel = "noopener";       // ...so the results table stays put in this one
         td.appendChild(a);
       } else {
         const v = row[c.key];
